@@ -11,6 +11,12 @@
 </head>
 
 <body>
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-primary" role="alert">
+    <h2>{{ message }}</h2>
+  </div>
+  {% endfor %}
+
   {% block title %}
   {% endblock %}
 

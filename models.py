@@ -65,9 +65,6 @@ class User(db.Model):
             last_name=last_name
         )
 
-        db.session.add(user)
-        db.session.commit()
-
         return user
 
     @classmethod
