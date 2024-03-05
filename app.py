@@ -6,9 +6,9 @@ from flask import Flask, redirect, render_template, flash, session
 
 from models import db, connect_db, User
 
-from forms import RegisterUserForm, LoginUserForm
+from forms import RegisterUserForm, LoginUserForm, CSRFProtectForm
 
-USERNAME = 'username'
+USERNAME_KEY = 'username'
 
 app = Flask(__name__)
 
@@ -35,8 +35,6 @@ def add_user():
 
     if form.validate_on_submit():
 
-        #TODO: handle username/email uniqueness validation
-
         new_user = User.register(
             username=form.username.data,
             password=form.password.data,
@@ -45,10 +43,11 @@ def add_user():
             last_name=form.last_name.data
         )
 
+        # want commit in view function so that if we do other database operations after adding user, we can use just a single commit total
         db.session.add(new_user)
         db.session.commit()
 
-        session[USERNAME] = new_user.username
+        session[USERNAME_KEY] = new_user.username
 
         flash("Registration successful!")
         return redirect(f"/users/{new_user.username}")
@@ -70,7 +69,7 @@ def login():
         )
 
         if user:
-            session[USERNAME] = user.username
+            session[USERNAME_KEY] = user.username
 
             return redirect(f"/users/{user.username}")
 
@@ -78,8 +77,34 @@ def login():
             form.username.errors = ['Invalid username/password.']
 
     else:
-        return render_template('login_form.html')
+        return render_template('login_form.html', form=form)
 
-#TODO: create login_form template.
+@app.get('/users/<username>')
+def display_user_info(username):
+    """Displays user info (excluding password)"""
+    if USERNAME_KEY in session:
+        if session[USERNAME_KEY] == username:
+            user = User.query.get_or_404(username)
+            form = CSRFProtectForm()
+            return render_template('user.html', user=user, form=form)
 
+        else:
+            # could add functionality to throw error page for nonexisting users
+            flash("Cannot access other user's information!")
+            return redirect(f'/users/{session[USERNAME_KEY]}')
 
+    else:
+        flash('You must be logged in to view user information!')
+        return redirect('/login')
+
+@app.post('/logout')
+def logout():
+    """Logs out current user in session"""
+
+    form = CSRFProtectForm()
+
+    if form.validate_on_submit():
+        session.pop(USERNAME_KEY, None)
+
+        flash('Successfully logged out!')
+        return redirect('/login')

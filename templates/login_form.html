@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
-<H1>Register</H1>
+<H1>Login</H1>
 {% endblock %}
 
 {% block content %}
-<form class="form-control" id="register-form" method="POST">
+<form id="login-form" method="POST">
   {{ form.hidden_tag() }}
 
   {% for field in form
@@ -22,7 +22,7 @@
 
   {% endfor %}
 
-  <button class="btn btn-success" type="submit">Register</button>
+  <button class="btn btn-success" type="submit">Login</button>
 
 </form>
 
