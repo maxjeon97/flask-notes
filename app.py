@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, redirect, render_template, flash, session
 
-from models import db, connect_db, User
+from models import db, connect_db, User, Note
 
 from forms import RegisterUserForm, LoginUserForm, CSRFProtectForm
 
@@ -85,8 +85,9 @@ def display_user_info(username):
     if USERNAME_KEY in session:
         if session[USERNAME_KEY] == username:
             user = User.query.get_or_404(username)
+            notes = user.notes
             form = CSRFProtectForm()
-            return render_template('user.html', user=user, form=form)
+            return render_template('user.html', user=user, notes=notes, form=form)
 
         else:
             # could add functionality to throw error page for nonexisting users
@@ -108,3 +109,23 @@ def logout():
 
         flash('Successfully logged out!')
         return redirect('/login')
+
+@app.post('/users/<username>/delete')
+def delete_user(username):
+    """Deletes user"""
+
+    form = CSRFProtectForm()
+
+    if form.validate_on_submit() and session[USERNAME_KEY] == username:
+
+        user = User.query.get_or_404(username)
+        user.notes = []
+        db.session.delete(user)
+        db.session.commit()
+
+        session.pop(USERNAME_KEY, None)
+
+        flash("User deleted!")
+        return redirect('/')
+
+

@@ -14,9 +14,34 @@
 
 <br>
 
-<h2>Notes</h2>
-<ul>
+<div>
+  {% if notes %}
+  <h2>Notes</h2>
+  <ul>
+    {% for note in notes %}
+    <li>
+      <form>
+        {{form.hidden_tag()}}
+        <button
+          formaction="/notes/{{ note.id }}/delete"
+          formmethod="POST"
+          class="btn btn-danger">Delete</button>
+        <button
+          formaction="/notes/{{ note.id }}/edit"
+          formmethod="GET"
+          class="btn btn-success">Edit</button>
+      </form>
+      <b>{{ note.title }}:</b> {{ note.content }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
 
-</ul>
+<a class="btn btn-primary" href="/users/{{ user.username }}/notes/add">Add Note</a>
+<form action="/users/{{ user.username }}/delete" method="POST">
+  {{form.hidden_tag()}}
+  <button class="btn btn-danger" type="submit">Delete User</button>
+</form>
 
 {% endblock %}
