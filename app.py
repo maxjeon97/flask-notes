@@ -6,7 +6,8 @@ from flask import Flask, redirect, render_template, flash, session
 
 from models import db, connect_db, User, Note
 
-from forms import RegisterUserForm, LoginUserForm, CSRFProtectForm
+from forms import RegisterUserForm, LoginUserForm, CSRFProtectForm, AddNoteForm
+from forms import EditNoteForm
 
 USERNAME_KEY = 'username'
 
@@ -127,5 +128,53 @@ def delete_user(username):
 
         flash("User deleted!")
         return redirect('/')
+
+@app.route('/users/<username>/notes/add', methods=['GET', 'POST'])
+def add_note(username):
+    """Shows add note form and handles add note form submission"""
+
+    form = AddNoteForm()
+
+    if USERNAME_KEY not in session:
+        flash('Must be logged in to view this page!')
+        return redirect('/login')
+
+    if form.validate_on_submit():
+        if session[USERNAME_KEY] == username:
+            new_note = Note(
+                title=form.title.data,
+                content=form.content.data,
+                owner_username=username)
+
+            db.session.add(new_note)
+            db.session.commit()
+
+            flash('Note added!')
+            return redirect(f'/users/{username}')
+
+        else:
+            # in case a user tries to add notes for a different user
+            flash('You can only add notes to your page!')
+            return redirect(f'/users/{session[USERNAME_KEY]}')
+
+    else:
+        return render_template('add_note_form.html', form=form)
+
+# @app.route('/notes/<note_id>/update', method=['GET', 'POST'])
+# def edit_note(note_id):
+#     """Shows add note form and handles add note form submission"""
+
+#     note = Note.query.get_or_404(note_id)
+
+#     form = EditNoteForm(obj=note)
+
+#     if form.validate_on_submit() and session[USERNAME_KEY] == note.username:
+
+
+
+
+
+
+
 
 

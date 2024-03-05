@@ -14,7 +14,7 @@
 
 <br>
 
-<div>
+<div class="text-primary">
   {% if notes %}
   <h2>Notes</h2>
   <ul>
@@ -27,9 +27,9 @@
           formmethod="POST"
           class="btn btn-danger">Delete</button>
         <button
-          formaction="/notes/{{ note.id }}/edit"
+          formaction="/notes/{{ note.id }}/update"
           formmethod="GET"
-          class="btn btn-success">Edit</button>
+          class="btn btn-success">Update</button>
       </form>
       <b>{{ note.title }}:</b> {{ note.content }}
     </li>
@@ -38,7 +38,8 @@
   {% endif %}
 </div>
 
-<a class="btn btn-primary" href="/users/{{ user.username }}/notes/add">Add Note</a>
+<a class="btn btn-primary mb-2" href="/users/{{ user.username }}/notes/add">Add Note</a>
+<br>
 <form action="/users/{{ user.username }}/delete" method="POST">
   {{form.hidden_tag()}}
   <button class="btn btn-danger" type="submit">Delete User</button>

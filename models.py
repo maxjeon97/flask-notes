@@ -108,4 +108,3 @@ class Note(db.Model):
         nullable=False
     )
 
-
