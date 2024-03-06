@@ -14,7 +14,7 @@
 
 <br>
 
-<div class="text-primary">
+<div>
   {% if notes %}
   <h2>Notes</h2>
   <ul>
@@ -25,11 +25,12 @@
         <button
           formaction="/notes/{{ note.id }}/delete"
           formmethod="POST"
-          class="btn btn-danger">Delete</button>
+          class="btn btn-danger ">Delete</button>
         <button
           formaction="/notes/{{ note.id }}/update"
           formmethod="GET"
-          class="btn btn-success">Update</button>
+          class="btn btn-success">
+          Update</button>
       </form>
       <b>{{ note.title }}:</b> {{ note.content }}
     </li>
