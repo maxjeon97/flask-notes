@@ -136,6 +136,8 @@ def delete_user(username):
 
         user = User.query.get_or_404(username)
 
+        # could use .delete() instead of .all() to do it instantly by deleting
+        # everything in the query itself
         notes = Note.query.filter_by(owner_username=username).all()
         for note in notes:
             db.session.delete(note)
